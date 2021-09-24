@@ -1,3 +1,6 @@
 *.json
 ./ft_printf/**/
 .cache
+obj/*
+client
+server
