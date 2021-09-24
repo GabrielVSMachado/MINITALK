@@ -9,15 +9,14 @@ LIBRARIES := -L$(FT_PRINTF_DIR) -lftprintf
 CC := gcc
 CFLAGS := -Wall -Werror -Wextra
 RM := rm -rf
-SERVER_DIR := src/server
-CLIENT_DIR := src/client
+SRC_DIR := src
 OBJ_DIR := obj
 FUNC_SERVER := server.c
 FUNC_CLIENT := client.c
-SRC_SERVER := $(addprefix $(SERVER_DIR)/,$(FUNC_SERVER))
-SRC_CLIENT := $(addprefix $(CLIENT_DIR)/,$(FUNC_CLIENT))
-OBJ_SERVER := $(SRC_SERVER:$(SERVER_DIR)/%.c=$(OBJ_DIR)/%.o)
-OBJ_CLIENT := $(SRC_CLIENT:$(CLIENT_DIR)/%.c=$(OBJ_DIR)/%.o)
+SRC_SERVER := $(addprefix $(SRC_DIR)/,$(FUNC_SERVER))
+SRC_CLIENT := $(addprefix $(SRC_DIR)/,$(FUNC_CLIENT))
+OBJ_SERVER := $(SRC_SERVER:$(SRC_DIR)/%.c=$(OBJ_DIR)/%.o)
+OBJ_CLIENT := $(SRC_CLIENT:$(SRC_DIR)/%.c=$(OBJ_DIR)/%.o)
 
 all: $(NAME)
 
@@ -27,11 +26,11 @@ $(NAME): $(OBJ_CLIENT) $(FT_PRINTF) $(SERVER)
 $(SERVER): $(OBJ_SERVER)
 	$(CC) $(CFLAGS) $(OBJ_SERVER) $(HEADERS) -o $(SERVER) $(LIBRARIES)
 
-$(OBJ_DIR)/%.o: $(SERVER_DIR)/%.c $(HEADER_DIR)/server.h
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.c $(HEADER_DIR)/minitalk.h
 	@mkdir -p $(OBJ_DIR)
 	$(CC) $(CFLAGS) $(HEADERS) -c $< -o $@
 
-$(OBJ_DIR)/%.o: $(CLIENT_DIR)/%.c $(HEADER_DIR)/client.h
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.c $(HEADER_DIR)/minitalk.h
 	@mkdir -p $(OBJ_DIR)
 	$(CC) $(CFLAGS) $(HEADERS) -c $< -o $@
 
