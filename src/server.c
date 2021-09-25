@@ -12,23 +12,23 @@
 
 #include "minitalk.h"
 
-void	test(int s)
+void	test(int s, siginfo_t *info_signal, void *cont)
 {
 	static int	i;
 	static char	result;
 
+	cont = (void *)cont;
+	if (i <= 0 && result == 0)
+		i = 7;
 	if (s == SIGUSR1)
-	{
-		if (i <= 0 && result == 0)
-			i = 6;
 		result |= 1 << i;
-	}
 	if (i == 0)
 	{
 		ft_printf("%c", result);
 		result = 0;
 	}
 	i--;
+	kill(info_signal->si_pid, SIGUSR1);
 }
 
 int	main(void)
@@ -38,7 +38,8 @@ int	main(void)
 
 	pid = getpid();
 	ft_bzero(&sa, sizeof(sa));
-	sa.sa_handler = &test;
+	sa.sa_flags = SA_SIGINFO;
+	sa.sa_sigaction = &test;
 	ft_printf("PID: %d\n", pid);
 	sigaction(SIGUSR1, &sa, NULL);
 	sigaction(SIGUSR2, &sa, NULL);

@@ -12,44 +12,43 @@
 
 #include "minitalk.h"
 
-static void	send_signal(int pid, char *binary)
-{
-	int	i;
+static struct s_pid_message	g_info;
 
-	i = 0;
-	while (i < 8)
+void	send_signal(int pid)
+{
+	static int	i;
+	static int	j;
+
+	(void)pid;
+	if (g_info.message[j])
 	{
-		if (binary[i] == '1')
-			kill(pid, SIGUSR1);
+		if (((g_info.message[j] >> (7 - i++)) & 0b1))
+			kill(g_info.pid, SIGUSR1);
 		else
-			kill(pid, SIGUSR2);
-		i++;
-		usleep(2);
+			kill(g_info.pid, SIGUSR2);
+		if (i == 8)
+		{
+			i = 0;
+			j++;
+		}
 	}
-}
-
-static void	eval_message(int pid, char *message)
-{
-	char	*binary;
-	int		i;
-
-	i = 0;
-	while (message[i])
-	{
-		binary = ft_utoa_base(message[i], "01");
-		send_signal(pid, binary);
-		i++;
-		free(binary);
-	}
+	else
+		exit(EXIT_SUCCESS);
 }
 
 int	main(int argc, char *argv[])
 {
-	int	pid;
+	struct sigaction	sa;
 
+	ft_bzero(&sa, sizeof(sa));
 	if (argc != 3)
 		exit(EXIT_FAILURE);
-	pid = ft_atoi(argv[1]);
-	eval_message(pid, argv[2]);
+	sa.sa_handler = send_signal;
+	sigaction(SIGUSR1, &sa, NULL);
+	g_info.pid = ft_atoi(argv[1]);
+	g_info.message = argv[2];
+	send_signal(g_info.pid);
+	while (TRUE)
+		pause();
 	return (EXIT_SUCCESS);
 }
