@@ -24,11 +24,13 @@ struct s_pid_message
 	int		pid;
 };
 
-typedef struct s_str_tmp
+typedef struct s_process
 {
 	char	*to_join;
 	char	*joined;
 	char	c_to_str[2];
-}	t_str_tmp;
+	int		first_time:1;
+	int		process:1;
+}	t_process;
 
 #endif
